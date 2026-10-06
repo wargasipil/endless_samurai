@@ -16,6 +16,9 @@ build/
 *.apk
 *.aab
 
+# Local dev tooling (Godot editor, SDK trees, etc.)
+tools/
+
 # System / editor
 .DS_Store
 Thumbs.db
