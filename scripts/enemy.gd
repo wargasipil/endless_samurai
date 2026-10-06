@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const GRAVITY := 1800.0
+const CONTACT_KNOCKBACK := 200.0
 
 @export var max_health: int = 2
 @export var contact_damage: int = 1
@@ -11,6 +12,7 @@ const GRAVITY := 1800.0
 var health: int
 var target: Node2D
 var hit_cooldown: float = 0.0
+var knockback_timer: float = 0.0
 
 signal defeated(enemy)
 
@@ -40,8 +42,14 @@ func take_damage(amount: int) -> void:
 		defeated.emit(self)
 		queue_free()
 
+func apply_knockback(impulse: Vector2) -> void:
+	velocity = impulse
+	knockback_timer = 0.18
+
 func _physics_process(delta: float) -> void:
-	if target:
+	if knockback_timer > 0.0:
+		knockback_timer -= delta
+	elif target:
 		var dir := signf(target.global_position.x - global_position.x)
 		velocity.x = dir * move_speed
 		sprite.flip_h = dir < 0.0
@@ -59,4 +67,7 @@ func _physics_process(delta: float) -> void:
 	if target and hit_cooldown <= 0.0 and global_position.distance_to(target.global_position) < 48.0:
 		if target.has_method("take_damage"):
 			target.take_damage(contact_damage)
+			if target.has_method("apply_knockback"):
+				var push := signf(target.global_position.x - global_position.x)
+				target.apply_knockback(Vector2(push * CONTACT_KNOCKBACK, -140.0))
 			hit_cooldown = 0.8

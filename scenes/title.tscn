@@ -1,0 +1,92 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/title.gd" id="1"]
+
+[node name="Title" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Bg" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.08, 0.06, 0.1, 1)
+
+[node name="SunDisc" type="ColorRect" parent="."]
+offset_left = 820.0
+offset_top = 120.0
+offset_right = 1040.0
+offset_bottom = 340.0
+color = Color(0.6, 0.15, 0.2, 1)
+
+[node name="Hill" type="ColorRect" parent="."]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -220.0
+color = Color(0.12, 0.08, 0.14, 1)
+
+[node name="Title" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 80.0
+offset_right = 500.0
+offset_bottom = 180.0
+text = "ENDLESS SAMURAI"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.98, 0.9, 0.65, 1)
+theme_override_font_sizes/font_size = 72
+
+[node name="Subtitle" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 180.0
+offset_right = 400.0
+offset_bottom = 220.0
+text = "a story of one blade against the night"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.75, 0.7, 0.55, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Prologue" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -520.0
+offset_top = 260.0
+offset_right = 520.0
+offset_bottom = 480.0
+text = "The village sleeps. The lord is dead. The last of his guard\nstands alone at the broken gate as oni spill from the pines.\n\nThey come without end. So does your blade."
+horizontal_alignment = 1
+vertical_alignment = 0
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.88, 0.82, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Begin" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = -80.0
+text = "DRAW YOUR SWORD"
+theme_override_font_sizes/font_size = 28
+
+[node name="Hint" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -60.0
+offset_right = 200.0
+offset_bottom = -30.0
+text = "tap anywhere to begin"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.6, 0.55, 0.5, 1)
+theme_override_font_sizes/font_size = 18

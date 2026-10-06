@@ -34,6 +34,7 @@ func _ready() -> void:
 	controls.attack_pressed.connect(func() -> void: player.request_attack())
 
 	player.health_changed.connect(_on_health_changed)
+	player.hit_landed.connect(_on_hit_landed)
 	player.died.connect(_on_player_died)
 
 	spawn_timer.timeout.connect(_spawn_enemy)
@@ -96,8 +97,18 @@ func _on_enemy_defeated(e) -> void:
 	score += int(e.score_value)
 	_refresh_hud()
 
-func _on_health_changed(_current: int, _maximum: int) -> void:
+func _on_health_changed(current: int, _maximum: int) -> void:
 	_refresh_hud()
+	if current < player.max_health:
+		_shake(10.0, 0.25)
+
+func _on_hit_landed(_target: Node) -> void:
+	_shake(6.0, 0.15)
+
+func _shake(strength: float, duration: float) -> void:
+	var cam := player.get_node_or_null("Camera")
+	if cam and cam.has_method("shake"):
+		cam.shake(strength, duration)
 
 func _refresh_hud() -> void:
 	hud_label.text = "Wave %d   HP %d/%d   Score %d   Best %d" % [

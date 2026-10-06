@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/samurai.svg" id="2"]
+[ext_resource type="Script" path="res://scripts/camera_shake.gd" id="3"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(44, 90)
@@ -33,9 +34,18 @@ monitoring = false
 position = Vector2(28, 0)
 shape = SubResource("SwordShape")
 
-[node name="Camera" type="Camera2D" parent="."]
+[node name="Slash" type="Line2D" parent="Sword"]
+width = 10.0
+default_color = Color(1, 0.95, 0.8, 0.9)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+points = PackedVector2Array(0, -36, 18, -18, 42, 0, 58, 16, 70, 32)
+
+[node name="Camera" type="Camera2D" parent="." node_paths=PackedStringArray()]
 zoom = Vector2(1, 1)
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
 limit_left = -2000
 limit_right = 2000
+script = ExtResource("3")
