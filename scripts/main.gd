@@ -1,16 +1,21 @@
-extends Node2D
+extends Node3D
 
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 const SAVE_PATH := "user://save.cfg"
-const ARENA_LIMIT := 1900.0
+const SPAWN_RADIUS := 21.0
+
+const RED_ONI := preload("res://assets/models/demon.glb")
+const GREEN_ONI := preload("res://assets/models/orc.glb")
+const BLUE_ONI := preload("res://assets/models/blue_demon.glb")
 
 const ENEMY_VARIANTS := {
-	"grunt":  {"hp": 2, "damage": 1, "speed": 90.0,  "score": 10, "tint": Color(1.0, 1.0, 1.0)},
-	"runner": {"hp": 1, "damage": 1, "speed": 170.0, "score": 15, "tint": Color(1.0, 0.7, 0.4)},
-	"brute":  {"hp": 5, "damage": 2, "speed": 60.0,  "score": 30, "tint": Color(0.6, 0.5, 1.0)},
+	"grunt":  {"hp": 2, "damage": 1, "speed": 2.6, "score": 10, "model": RED_ONI,   "scale": 0.9,  "radius": 0.45, "height": 1.8},
+	"runner": {"hp": 1, "damage": 1, "speed": 4.6, "score": 15, "model": GREEN_ONI, "scale": 0.75, "radius": 0.4,  "height": 1.5},
+	"brute":  {"hp": 5, "damage": 2, "speed": 1.9, "score": 30, "model": BLUE_ONI,  "scale": 1.3,  "radius": 0.7,  "height": 2.4},
 }
 
-@onready var player: CharacterBody2D = $World/Player
+@onready var player: CharacterBody3D = $World/Player
+@onready var camera: Camera3D = $World/Camera
 @onready var hud_label: Label = $UI/HUD/HudLabel
 @onready var wave_banner: Label = $UI/HUD/WaveBanner
 @onready var game_over_panel: Control = $UI/GameOver
@@ -24,6 +29,7 @@ var kills: int = 0
 var score: int = 0
 var best_score: int = 0
 var alive: bool = true
+var can_restart: bool = false
 
 func _ready() -> void:
 	randomize()
@@ -70,9 +76,9 @@ func _spawn_enemy() -> void:
 	profile = _scale_for_wave(profile)
 	var e := ENEMY_SCENE.instantiate()
 	e.configure(profile)
-	var side := 1.0 if randf() < 0.5 else -1.0
-	var px: float = clampf(player.global_position.x + side * 700.0, -ARENA_LIMIT, ARENA_LIMIT)
-	e.global_position = Vector2(px, player.global_position.y - 240.0)
+	# Oni step out of the tree line somewhere around the arena.
+	var angle := randf() * TAU
+	e.position = Vector3(cos(angle), 0.0, sin(angle)) * SPAWN_RADIUS
 	e.set_target(player)
 	e.defeated.connect(_on_enemy_defeated)
 	$World.add_child(e)
@@ -89,7 +95,7 @@ func _roll_variant() -> Dictionary:
 func _scale_for_wave(profile: Dictionary) -> Dictionary:
 	var tier: int = max(0, wave - 1)
 	profile["hp"] = int(profile["hp"]) + int(tier / 2)
-	profile["speed"] = float(profile["speed"]) + tier * 6.0
+	profile["speed"] = float(profile["speed"]) + tier * 0.15
 	return profile
 
 func _on_enemy_defeated(e) -> void:
@@ -100,15 +106,14 @@ func _on_enemy_defeated(e) -> void:
 func _on_health_changed(current: int, _maximum: int) -> void:
 	_refresh_hud()
 	if current < player.max_health:
-		_shake(10.0, 0.25)
+		_shake(0.3, 0.25)
 
 func _on_hit_landed(_target: Node) -> void:
-	_shake(6.0, 0.15)
+	_shake(0.15, 0.12)
 
 func _shake(strength: float, duration: float) -> void:
-	var cam := player.get_node_or_null("Camera")
-	if cam and cam.has_method("shake"):
-		cam.shake(strength, duration)
+	if camera.has_method("shake"):
+		camera.shake(strength, duration)
 
 func _refresh_hud() -> void:
 	hud_label.text = "Wave %d   HP %d/%d   Score %d   Best %d" % [
@@ -129,9 +134,11 @@ func _on_player_died() -> void:
 	game_over_panel.visible = true
 	game_over_panel.modulate.a = 0.0
 	create_tween().tween_property(game_over_panel, "modulate:a", 1.0, 0.6)
+	# Let the death animation play before a held key or tap can restart.
+	get_tree().create_timer(1.0).timeout.connect(func() -> void: can_restart = true)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if alive:
+	if alive or not can_restart:
 		return
 	var fired := false
 	if event is InputEventScreenTouch and event.pressed:
