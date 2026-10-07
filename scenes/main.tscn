@@ -31,14 +31,17 @@ sky_material = SubResource("SkyMat")
 background_mode = 2
 sky = SubResource("Sky")
 ambient_light_source = 3
-ambient_light_color = Color(0.55, 0.4, 0.55, 1)
-ambient_light_energy = 0.6
+ambient_light_color = Color(0.55, 0.42, 0.55, 1)
+ambient_light_energy = 0.9
 tonemap_mode = 2
+tonemap_exposure = 1.15
 glow_enabled = true
-glow_intensity = 0.5
+glow_intensity = 0.6
+glow_bloom = 0.2
 fog_enabled = true
 fog_light_color = Color(0.14, 0.1, 0.18, 1)
-fog_density = 0.02
+fog_density = 0.008
+fog_sky_affect = 0.3
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1")
@@ -72,10 +75,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 [node name="CameraRig" type="Node3D" parent="World"]
 
 [node name="Camera3D" type="Camera3D" parent="World/CameraRig"]
-transform = Transform3D(1, 0, 0, 0, 0.7071, 0.7071, 0, -0.7071, 0.7071, 0, 10, 10)
+transform = Transform3D(1, 0, 0, 0, 0.7071, 0.7071, 0, -0.7071, 0.7071, 0, 7, 7)
 current = true
-fov = 55.0
+fov = 60.0
 script = ExtResource("4")
+
+[node name="FillLight" type="OmniLight3D" parent="World/CameraRig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 2)
+light_color = Color(1, 0.82, 0.68, 1)
+light_energy = 1.2
+omni_range = 12.0
+omni_attenuation = 1.5
 
 [node name="SpawnTimer" type="Timer" parent="."]
 one_shot = false

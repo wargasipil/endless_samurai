@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1"]
 
@@ -6,16 +6,45 @@
 radius = 0.45
 height = 1.8
 
-[sub_resource type="CapsuleMesh" id="EnemyBodyMesh"]
-radius = 0.45
-height = 1.8
+[sub_resource type="StandardMaterial3D" id="SkinMat"]
+albedo_color = Color(0.78, 0.6, 0.5, 1)
+roughness = 0.7
 
-[sub_resource type="BoxMesh" id="ClubMesh"]
-size = Vector3(0.14, 0.14, 0.9)
+[sub_resource type="StandardMaterial3D" id="BandMat"]
+albedo_color = Color(0.8, 0.15, 0.2, 1)
+roughness = 0.6
 
-[sub_resource type="StandardMaterial3D" id="ClubMat"]
-albedo_color = Color(0.35, 0.22, 0.15, 1)
-roughness = 0.9
+[sub_resource type="StandardMaterial3D" id="ClubWoodMat"]
+albedo_color = Color(0.35, 0.22, 0.14, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="ClubHeadMat"]
+albedo_color = Color(0.5, 0.33, 0.2, 1)
+roughness = 0.95
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+radius = 0.42
+height = 1.0
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="TorusMesh" id="BandMesh"]
+inner_radius = 0.2
+outer_radius = 0.26
+rings = 8
+ring_segments = 24
+
+[sub_resource type="CylinderMesh" id="ClubHandleMesh"]
+top_radius = 0.045
+bottom_radius = 0.055
+height = 0.9
+
+[sub_resource type="CylinderMesh" id="ClubHeadMesh"]
+top_radius = 0.11
+bottom_radius = 0.14
+height = 0.3
 
 [node name="Enemy" type="CharacterBody3D"]
 collision_layer = 4
@@ -30,9 +59,24 @@ shape = SubResource("EnemyShape")
 
 [node name="Body" type="MeshInstance3D" parent="MeshRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("EnemyBodyMesh")
+mesh = SubResource("BodyMesh")
 
-[node name="Club" type="MeshInstance3D" parent="MeshRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.9, -0.3)
-mesh = SubResource("ClubMesh")
-material_override = SubResource("ClubMat")
+[node name="Head" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMat")
+
+[node name="Band" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68, 0)
+mesh = SubResource("BandMesh")
+material_override = SubResource("BandMat")
+
+[node name="ClubHandle" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(0.9397, 0, -0.342, 0, 1, 0, 0.342, 0, 0.9397, 0.45, 1.0, -0.15)
+mesh = SubResource("ClubHandleMesh")
+material_override = SubResource("ClubWoodMat")
+
+[node name="ClubHead" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(0.9397, 0, -0.342, 0, 1, 0, 0.342, 0, 0.9397, 0.6, 1.42, -0.6)
+mesh = SubResource("ClubHeadMesh")
+material_override = SubResource("ClubHeadMat")

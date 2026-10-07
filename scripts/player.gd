@@ -24,6 +24,7 @@ signal hit_landed(target: Node)
 @onready var mesh_root: Node3D = $MeshRoot
 @onready var sword_pivot: Node3D = $MeshRoot/SwordPivot
 @onready var hit_area: Area3D = $MeshRoot/SwordPivot/HitArea
+@onready var slash_vfx: MeshInstance3D = $MeshRoot/SwordPivot/Slash
 
 func _ready() -> void:
 	health = max_health
@@ -43,6 +44,21 @@ func request_attack() -> void:
 		var tw := create_tween()
 		sword_pivot.rotation.y = -PI * 0.55
 		tw.tween_property(sword_pivot, "rotation:y", PI * 0.55, ATTACK_DURATION)
+		_flash_slash()
+
+func _flash_slash() -> void:
+	if slash_vfx == null:
+		return
+	slash_vfx.visible = true
+	var mat: StandardMaterial3D = slash_vfx.material_override
+	if mat:
+		mat.albedo_color = Color(1, 0.95, 0.8, 0.95)
+		var tw := create_tween()
+		tw.tween_property(mat, "albedo_color:a", 0.0, ATTACK_DURATION)
+		tw.tween_callback(func() -> void:
+			if is_instance_valid(slash_vfx):
+				slash_vfx.visible = false
+		)
 
 func _apply_attack() -> void:
 	for body in hit_area.get_overlapping_bodies():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1"]
 
@@ -6,36 +6,95 @@
 radius = 0.45
 height = 1.8
 
-[sub_resource type="CapsuleMesh" id="PlayerBodyMesh"]
-radius = 0.45
-height = 1.8
+; --- Materials ---
+[sub_resource type="StandardMaterial3D" id="RobeMat"]
+albedo_color = Color(0.12, 0.15, 0.3, 1)
+roughness = 0.75
+metallic = 0.0
 
-[sub_resource type="StandardMaterial3D" id="PlayerBodyMat"]
-albedo_color = Color(0.15, 0.18, 0.3, 1)
-metallic = 0.1
+[sub_resource type="StandardMaterial3D" id="ObiMat"]
+albedo_color = Color(0.75, 0.55, 0.2, 1)
 roughness = 0.55
 
-[sub_resource type="BoxMesh" id="SwordMesh"]
-size = Vector3(0.08, 0.08, 1.2)
+[sub_resource type="StandardMaterial3D" id="SkinMat"]
+albedo_color = Color(0.86, 0.72, 0.6, 1)
+roughness = 0.65
 
-[sub_resource type="StandardMaterial3D" id="SwordMat"]
-albedo_color = Color(0.85, 0.88, 0.95, 1)
-metallic = 0.9
-roughness = 0.2
+[sub_resource type="StandardMaterial3D" id="HatMat"]
+albedo_color = Color(0.72, 0.56, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="HairMat"]
+albedo_color = Color(0.05, 0.04, 0.08, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="BladeMat"]
+albedo_color = Color(0.92, 0.95, 1.0, 1)
+metallic = 1.0
+roughness = 0.08
 emission_enabled = true
-emission = Color(0.6, 0.65, 0.9, 1)
-emission_energy_multiplier = 0.4
+emission = Color(0.55, 0.8, 1.0, 1)
+emission_energy_multiplier = 0.35
+
+[sub_resource type="StandardMaterial3D" id="HiltMat"]
+albedo_color = Color(0.1, 0.08, 0.12, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="GuardMat"]
+albedo_color = Color(0.35, 0.3, 0.1, 1)
+metallic = 0.9
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="SlashMat"]
+albedo_color = Color(1, 0.95, 0.8, 0.0)
+emission_enabled = true
+emission = Color(1, 0.95, 0.7, 1)
+emission_energy_multiplier = 2.4
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+blend_mode = 1
+
+; --- Meshes ---
+[sub_resource type="CapsuleMesh" id="TorsoMesh"]
+radius = 0.42
+height = 1.1
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="CylinderMesh" id="HatConeMesh"]
+top_radius = 0.08
+bottom_radius = 0.55
+height = 0.32
+
+[sub_resource type="CylinderMesh" id="HatBrimMesh"]
+top_radius = 0.7
+bottom_radius = 0.7
+height = 0.04
+
+[sub_resource type="BoxMesh" id="ObiMesh"]
+size = Vector3(0.86, 0.12, 0.46)
+
+[sub_resource type="BoxMesh" id="BladeMesh"]
+size = Vector3(0.045, 0.025, 1.1)
+
+[sub_resource type="BoxMesh" id="GuardMesh"]
+size = Vector3(0.18, 0.06, 0.06)
+
+[sub_resource type="CylinderMesh" id="HiltMesh"]
+top_radius = 0.025
+bottom_radius = 0.025
+height = 0.22
+
+[sub_resource type="QuadMesh" id="SlashQuad"]
+size = Vector2(1.1, 0.22)
 
 [sub_resource type="BoxShape3D" id="SwordHitShape"]
 size = Vector3(1.4, 1.4, 1.6)
 
-[sub_resource type="BoxMesh" id="HatMesh"]
-size = Vector3(0.9, 0.12, 0.9)
-
-[sub_resource type="StandardMaterial3D" id="HatMat"]
-albedo_color = Color(0.08, 0.06, 0.1, 1)
-roughness = 0.9
-
+; --- Nodes ---
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 1
@@ -47,23 +106,59 @@ shape = SubResource("PlayerShape")
 
 [node name="MeshRoot" type="Node3D" parent="."]
 
-[node name="Body" type="MeshInstance3D" parent="MeshRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("PlayerBodyMesh")
-material_override = SubResource("PlayerBodyMat")
+[node name="Torso" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("TorsoMesh")
+material_override = SubResource("RobeMat")
 
-[node name="Hat" type="MeshInstance3D" parent="MeshRoot"]
+[node name="Obi" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("ObiMesh")
+material_override = SubResource("ObiMat")
+
+[node name="Head" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMat")
+
+[node name="Hair" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1.1, 0, 0, 0, 0.5, 0, 0, 0, 1.1, 0, 1.78, 0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("HairMat")
+
+[node name="HatCone" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0)
+mesh = SubResource("HatConeMesh")
+material_override = SubResource("HatMat")
+
+[node name="HatBrim" type="MeshInstance3D" parent="MeshRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
-mesh = SubResource("HatMesh")
+mesh = SubResource("HatBrimMesh")
 material_override = SubResource("HatMat")
 
 [node name="SwordPivot" type="Node3D" parent="MeshRoot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.05, -0.1)
+
+[node name="Hilt" type="MeshInstance3D" parent="MeshRoot/SwordPivot"]
+transform = Transform3D(1, 0, 0, 0, 0.0, 1, 0, -1, 0.0, 0, 0, 0)
+mesh = SubResource("HiltMesh")
+material_override = SubResource("HiltMat")
+
+[node name="Guard" type="MeshInstance3D" parent="MeshRoot/SwordPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.14)
+mesh = SubResource("GuardMesh")
+material_override = SubResource("GuardMat")
 
 [node name="Blade" type="MeshInstance3D" parent="MeshRoot/SwordPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.4)
-mesh = SubResource("SwordMesh")
-material_override = SubResource("SwordMat")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.72)
+mesh = SubResource("BladeMesh")
+material_override = SubResource("BladeMat")
+
+[node name="Slash" type="MeshInstance3D" parent="MeshRoot/SwordPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9)
+mesh = SubResource("SlashQuad")
+material_override = SubResource("SlashMat")
+visible = false
 
 [node name="HitArea" type="Area3D" parent="MeshRoot/SwordPivot"]
 collision_layer = 0

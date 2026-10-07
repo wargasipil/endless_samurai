@@ -31,6 +31,7 @@ var alive: bool = true
 func _ready() -> void:
 	randomize()
 	best_score = _load_best()
+	_scatter_decor()
 
 	controls.move_vector.connect(_on_move)
 	controls.jump_pressed.connect(func() -> void: player.request_jump())
@@ -52,10 +53,36 @@ func _ready() -> void:
 
 func _enter_demo_mode() -> void:
 	controls.visible = false
+	player.max_health = 20
+	player.health = 20
+	player.health_changed.emit(player.health, player.max_health)
 	var demo := preload("res://scripts/demo_controller.gd").new()
 	demo.name = "DemoController"
 	demo.setup(player)
 	$World.add_child(demo)
+
+func _scatter_decor() -> void:
+	# Deterministic-ish scatter of small ground accents so the arena has depth.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20261007
+	var stone_mat := StandardMaterial3D.new()
+	stone_mat.albedo_color = Color(0.18, 0.14, 0.2, 1)
+	stone_mat.roughness = 0.95
+	var decor_root := Node3D.new()
+	decor_root.name = "Decor"
+	$World.add_child(decor_root)
+	for i in 40:
+		var m := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		var s: float = rng.randf_range(0.25, 0.9)
+		box.size = Vector3(s, s * 0.4, s)
+		m.mesh = box
+		m.material_override = stone_mat
+		var angle := rng.randf() * TAU
+		var r := rng.randf_range(6.0, 24.0)
+		m.position = Vector3(cos(angle) * r, 0.0, sin(angle) * r)
+		m.rotation.y = rng.randf() * TAU
+		decor_root.add_child(m)
 
 func _process(_delta: float) -> void:
 	if camera_rig and player:
