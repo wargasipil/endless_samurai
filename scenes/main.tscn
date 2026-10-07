@@ -6,6 +6,10 @@
 [ext_resource type="Script" path="res://scripts/camera_shake.gd" id="4"]
 [ext_resource type="Texture2D" path="res://assets/hud/hp_bar.png" id="5"]
 
+[sub_resource type="AtlasTexture" id="PortraitAtlas"]
+atlas = ExtResource("5")
+region = Rect2(0, 0, 400, 260)
+
 [sub_resource type="BoxShape3D" id="FloorShape"]
 size = Vector3(60, 1, 60)
 
@@ -107,28 +111,36 @@ mouse_filter = 2
 [node name="HpBar" type="Control" parent="UI/HUD"]
 offset_left = 20.0
 offset_top = 16.0
-offset_right = 620.0
-offset_bottom = 146.0
+offset_right = 460.0
+offset_bottom = 120.0
 
-[node name="HpBarTexture" type="TextureRect" parent="UI/HUD/HpBar"]
+[node name="Portrait" type="TextureRect" parent="UI/HUD/HpBar"]
+offset_top = -4.0
+offset_right = 160.0
+offset_bottom = 100.0
+texture = SubResource("PortraitAtlas")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="BarFrame" type="ColorRect" parent="UI/HUD/HpBar"]
+offset_left = 160.0
+offset_top = 24.0
+offset_right = 460.0
+offset_bottom = 72.0
+color = Color(0.09, 0.04, 0.05, 1)
+
+[node name="HpBarMask" type="ColorRect" parent="UI/HUD/HpBar/BarFrame"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource("5")
-expand_mode = 1
-stretch_mode = 5
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+color = Color(0.82, 0.16, 0.18, 1)
 
-[node name="HpBarMask" type="ColorRect" parent="UI/HUD/HpBar"]
-offset_left = 120.0
-offset_top = 10.0
-offset_right = 575.0
-offset_bottom = 65.0
-color = Color(0.06, 0.03, 0.03, 0.78)
-
-[node name="HpBarText" type="Label" parent="UI/HUD/HpBar"]
-offset_left = 110.0
-offset_top = 8.0
-offset_right = 580.0
-offset_bottom = 68.0
+[node name="HpBarText" type="Label" parent="UI/HUD/HpBar/BarFrame"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 text = "20 / 20"
 horizontal_alignment = 1
 vertical_alignment = 1
