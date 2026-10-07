@@ -23,6 +23,8 @@ GODOT ?= tools/godot/Godot_v4.3-stable_win64_console.exe
 PROJECT := .
 SCENE_MAIN := res://scenes/main.tscn
 SCENE_TITLE := res://scenes/title.tscn
+SCENE_HP := res://scenes/healthbar_preview.tscn
+SCENE_DPAD := res://scenes/dpad_preview.tscn
 VIDEO_DIR := videos/tiktok-gameplay-30s
 RAW := $(VIDEO_DIR)/gameplay-raw.avi
 MP4 := $(VIDEO_DIR)/samurai-tiktok-30s.mp4
@@ -34,7 +36,7 @@ VERBOSE := $(if $(V),--verbose,)
 FFMPEG ?= ffmpeg
 FONT := C\\:/Windows/Fonts/impact.ttf
 
-.PHONY: help run play editor demo import check record mp4 hook tiktok clean-cache clean-render
+.PHONY: help run play editor demo hp dpad import check record mp4 hook tiktok clean-cache clean-render
 
 help:
 	@echo "Targets: run play editor demo import check record mp4 hook tiktok clean-cache clean-render"
@@ -51,6 +53,12 @@ editor:
 
 demo:
 	"$(GODOT)" --path "$(PROJECT)" $(VERBOSE) "$(SCENE_MAIN)" -- --demo
+
+hp:
+	"$(GODOT)" --path "$(PROJECT)" $(VERBOSE) "$(SCENE_HP)"
+
+dpad:
+	"$(GODOT)" --path "$(PROJECT)" $(VERBOSE) "$(SCENE_DPAD)"
 
 import:
 	"$(GODOT)" --path "$(PROJECT)" --headless --import

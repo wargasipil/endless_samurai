@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/dpad.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/dpad/dpad_default.png" id="2"]
+
+[node name="Dpad" type="Control"]
+custom_minimum_size = Vector2(240, 220)
+mouse_filter = 0
+script = ExtResource("1")
+
+[node name="Base" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5

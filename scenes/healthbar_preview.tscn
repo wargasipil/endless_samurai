@@ -1,0 +1,235 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/healthbar/portrait_samurai.png" id="portrait"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/bar_fill.png" id="fill"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/bar_empty.png" id="empty"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/diamond_frame.png" id="diamond"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/arrow_a.png" id="arrow_a"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/arrow_b.png" id="arrow_b"]
+[ext_resource type="Texture2D" path="res://assets/healthbar/sakura_petals.png" id="sakura"]
+
+[node name="HealthbarPreview" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.11, 0.08, 0.12, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 12.0
+offset_right = 800.0
+offset_bottom = 50.0
+text = "Healthbar preview — press ESC to quit"
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 22
+
+[node name="BarFull" type="Control" parent="."]
+offset_left = 24.0
+offset_top = 70.0
+offset_right = 760.0
+offset_bottom = 220.0
+
+[node name="Label" type="Label" parent="BarFull"]
+offset_right = 160.0
+offset_bottom = 24.0
+text = "Full HP"
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Portrait" type="TextureRect" parent="BarFull"]
+offset_top = 24.0
+offset_right = 140.0
+offset_bottom = 164.0
+texture = ExtResource("portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bar" type="TextureProgressBar" parent="BarFull"]
+offset_left = 150.0
+offset_top = 68.0
+offset_right = 760.0
+offset_bottom = 132.0
+max_value = 100.0
+value = 100.0
+texture_under = ExtResource("empty")
+texture_progress = ExtResource("fill")
+nine_patch_stretch = false
+
+[node name="Text" type="Label" parent="BarFull/Bar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "20 / 20"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.02, 0.02, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+
+[node name="BarHalf" type="Control" parent="."]
+offset_left = 24.0
+offset_top = 240.0
+offset_right = 760.0
+offset_bottom = 390.0
+
+[node name="Label" type="Label" parent="BarHalf"]
+offset_right = 160.0
+offset_bottom = 24.0
+text = "Half HP"
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Portrait" type="TextureRect" parent="BarHalf"]
+offset_top = 24.0
+offset_right = 140.0
+offset_bottom = 164.0
+texture = ExtResource("portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bar" type="TextureProgressBar" parent="BarHalf"]
+offset_left = 150.0
+offset_top = 68.0
+offset_right = 760.0
+offset_bottom = 132.0
+max_value = 100.0
+value = 50.0
+texture_under = ExtResource("empty")
+texture_progress = ExtResource("fill")
+nine_patch_stretch = false
+
+[node name="Text" type="Label" parent="BarHalf/Bar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "10 / 20"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.02, 0.02, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+
+[node name="BarLow" type="Control" parent="."]
+offset_left = 24.0
+offset_top = 410.0
+offset_right = 760.0
+offset_bottom = 560.0
+
+[node name="Label" type="Label" parent="BarLow"]
+offset_right = 160.0
+offset_bottom = 24.0
+text = "Low HP"
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Portrait" type="TextureRect" parent="BarLow"]
+offset_top = 24.0
+offset_right = 140.0
+offset_bottom = 164.0
+texture = ExtResource("portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bar" type="TextureProgressBar" parent="BarLow"]
+offset_left = 150.0
+offset_top = 68.0
+offset_right = 760.0
+offset_bottom = 132.0
+max_value = 100.0
+value = 15.0
+texture_under = ExtResource("empty")
+texture_progress = ExtResource("fill")
+nine_patch_stretch = false
+
+[node name="Text" type="Label" parent="BarLow/Bar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "3 / 20"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.02, 0.02, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+
+[node name="UnusedBits" type="Control" parent="."]
+offset_left = 24.0
+offset_top = 590.0
+offset_right = 1200.0
+offset_bottom = 820.0
+
+[node name="Label" type="Label" parent="UnusedBits"]
+offset_right = 400.0
+offset_bottom = 24.0
+text = "Not wired in yet:"
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Diamond" type="TextureRect" parent="UnusedBits"]
+offset_top = 30.0
+offset_right = 190.0
+offset_bottom = 221.0
+texture = ExtResource("diamond")
+
+[node name="DLabel" type="Label" parent="UnusedBits"]
+offset_top = 194.0
+offset_right = 190.0
+offset_bottom = 220.0
+text = "diamond_frame"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="ArrowA" type="TextureRect" parent="UnusedBits"]
+offset_left = 220.0
+offset_top = 60.0
+offset_right = 310.0
+offset_bottom = 162.0
+texture = ExtResource("arrow_a")
+
+[node name="ALabel" type="Label" parent="UnusedBits"]
+offset_left = 220.0
+offset_top = 165.0
+offset_right = 310.0
+offset_bottom = 190.0
+text = "arrow_a"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="ArrowB" type="TextureRect" parent="UnusedBits"]
+offset_left = 330.0
+offset_top = 60.0
+offset_right = 420.0
+offset_bottom = 162.0
+texture = ExtResource("arrow_b")
+
+[node name="BLabel" type="Label" parent="UnusedBits"]
+offset_left = 330.0
+offset_top = 165.0
+offset_right = 420.0
+offset_bottom = 190.0
+text = "arrow_b"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="Sakura" type="TextureRect" parent="UnusedBits"]
+offset_left = 440.0
+offset_top = 45.0
+offset_right = 557.0
+offset_bottom = 178.0
+texture = ExtResource("sakura")
+
+[node name="SLabel" type="Label" parent="UnusedBits"]
+offset_left = 440.0
+offset_top = 180.0
+offset_right = 557.0
+offset_bottom = 205.0
+text = "sakura_petals"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 14

@@ -15,8 +15,8 @@ const ENEMY_VARIANTS := {
 @onready var camera: Camera3D = $World/CameraRig/Camera3D
 @onready var camera_rig: Node3D = $World/CameraRig
 @onready var hud_label: Label = $UI/HUD/HudLabel
-@onready var hp_bar_mask: ColorRect = $UI/HUD/HpBar/BarFrame/HpBarMask
-@onready var hp_bar_text: Label = $UI/HUD/HpBar/BarFrame/HpBarText
+@onready var hp_bar_progress: TextureProgressBar = $UI/HUD/HpBar/HpBarProgress
+@onready var hp_bar_text: Label = $UI/HUD/HpBar/HpBarProgress/HpBarText
 @onready var wave_banner: Label = $UI/HUD/WaveBanner
 @onready var game_over_panel: Control = $UI/GameOver
 @onready var game_over_label: Label = $UI/GameOver/Panel/Label
@@ -171,7 +171,7 @@ func _refresh_hp_bar() -> void:
 	var pct: float = 0.0
 	if player.max_health > 0:
 		pct = clampf(float(player.health) / float(player.max_health), 0.0, 1.0)
-	hp_bar_mask.anchor_right = pct
+	hp_bar_progress.value = pct * 100.0
 
 func _on_player_died() -> void:
 	alive = false
