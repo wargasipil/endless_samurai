@@ -45,4 +45,4 @@ videos/**/*.import
 *.mov
 *.mkv
 *.webm
-*.png
+videos/**/*.png
