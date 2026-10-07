@@ -15,6 +15,8 @@ const ENEMY_VARIANTS := {
 @onready var camera: Camera3D = $World/CameraRig/Camera3D
 @onready var camera_rig: Node3D = $World/CameraRig
 @onready var hud_label: Label = $UI/HUD/HudLabel
+@onready var hp_bar_mask: ColorRect = $UI/HUD/HpBar/HpBarMask
+@onready var hp_bar_text: Label = $UI/HUD/HpBar/HpBarText
 @onready var wave_banner: Label = $UI/HUD/WaveBanner
 @onready var game_over_panel: Control = $UI/GameOver
 @onready var game_over_label: Label = $UI/GameOver/Panel/Label
@@ -147,7 +149,7 @@ func _on_enemy_defeated(e) -> void:
 	_refresh_hud()
 
 func _on_health_changed(current: int, _maximum: int) -> void:
-	_refresh_hud()
+	_refresh_hp_bar()
 	if current < player.max_health:
 		_shake(0.6, 0.25)
 
@@ -158,10 +160,23 @@ func _shake(strength: float, duration: float) -> void:
 	if camera and camera.has_method("shake"):
 		camera.shake(strength, duration)
 
+const HP_BAR_LEFT := 120.0
+const HP_BAR_RIGHT := 575.0
+
 func _refresh_hud() -> void:
-	hud_label.text = "Wave %d   HP %d/%d   Score %d   Best %d" % [
-		wave, player.health, player.max_health, score, best_score
-	]
+	hud_label.text = "Wave %d   Score %d   Best %d" % [wave, score, best_score]
+	_refresh_hp_bar()
+
+func _refresh_hp_bar() -> void:
+	if hp_bar_text == null:
+		return
+	hp_bar_text.text = "%d / %d" % [player.health, player.max_health]
+	var pct: float = 0.0
+	if player.max_health > 0:
+		pct = clampf(float(player.health) / float(player.max_health), 0.0, 1.0)
+	var fill_edge := HP_BAR_LEFT + (HP_BAR_RIGHT - HP_BAR_LEFT) * pct
+	hp_bar_mask.offset_left = fill_edge
+	hp_bar_mask.offset_right = HP_BAR_RIGHT
 
 func _on_player_died() -> void:
 	alive = false
