@@ -1,16 +1,19 @@
-extends Node2D
+extends Node3D
 
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 const SAVE_PATH := "user://save.cfg"
-const ARENA_LIMIT := 1900.0
+const ARENA_LIMIT := 18.0
+const SPAWN_RADIUS := 14.0
 
 const ENEMY_VARIANTS := {
-	"grunt":  {"hp": 2, "damage": 1, "speed": 90.0,  "score": 10, "tint": Color(1.0, 1.0, 1.0)},
-	"runner": {"hp": 1, "damage": 1, "speed": 170.0, "score": 15, "tint": Color(1.0, 0.7, 0.4)},
-	"brute":  {"hp": 5, "damage": 2, "speed": 60.0,  "score": 30, "tint": Color(0.6, 0.5, 1.0)},
+	"grunt":  {"hp": 2, "damage": 1, "speed": 2.5, "score": 10, "tint": Color(0.85, 0.2, 0.2)},
+	"runner": {"hp": 1, "damage": 1, "speed": 4.2, "score": 15, "tint": Color(1.0, 0.6, 0.2)},
+	"brute":  {"hp": 5, "damage": 2, "speed": 1.8, "score": 30, "tint": Color(0.6, 0.3, 0.9)},
 }
 
-@onready var player: CharacterBody2D = $World/Player
+@onready var player: CharacterBody3D = $World/Player
+@onready var camera: Camera3D = $World/CameraRig/Camera3D
+@onready var camera_rig: Node3D = $World/CameraRig
 @onready var hud_label: Label = $UI/HUD/HudLabel
 @onready var wave_banner: Label = $UI/HUD/WaveBanner
 @onready var game_over_panel: Control = $UI/GameOver
@@ -54,6 +57,13 @@ func _enter_demo_mode() -> void:
 	demo.setup(player)
 	$World.add_child(demo)
 
+func _process(_delta: float) -> void:
+	if camera_rig and player:
+		camera_rig.global_position = camera_rig.global_position.lerp(
+			Vector3(player.global_position.x, 0.0, player.global_position.z),
+			0.08
+		)
+
 func _advance_wave() -> void:
 	wave += 1
 	var interval: float = maxf(0.6, 2.6 - wave * 0.15)
@@ -80,9 +90,11 @@ func _spawn_enemy() -> void:
 	profile = _scale_for_wave(profile)
 	var e := ENEMY_SCENE.instantiate()
 	e.configure(profile)
-	var side := 1.0 if randf() < 0.5 else -1.0
-	var px: float = clampf(player.global_position.x + side * 700.0, -ARENA_LIMIT, ARENA_LIMIT)
-	e.global_position = Vector2(px, player.global_position.y - 240.0)
+	var angle := randf() * TAU
+	var pos := player.global_position + Vector3(cos(angle) * SPAWN_RADIUS, 0.5, sin(angle) * SPAWN_RADIUS)
+	pos.x = clampf(pos.x, -ARENA_LIMIT, ARENA_LIMIT)
+	pos.z = clampf(pos.z, -ARENA_LIMIT, ARENA_LIMIT)
+	e.global_position = pos
 	e.set_target(player)
 	e.defeated.connect(_on_enemy_defeated)
 	$World.add_child(e)
@@ -99,7 +111,7 @@ func _roll_variant() -> Dictionary:
 func _scale_for_wave(profile: Dictionary) -> Dictionary:
 	var tier: int = max(0, wave - 1)
 	profile["hp"] = int(profile["hp"]) + int(tier / 2)
-	profile["speed"] = float(profile["speed"]) + tier * 6.0
+	profile["speed"] = float(profile["speed"]) + tier * 0.2
 	return profile
 
 func _on_enemy_defeated(e) -> void:
@@ -110,15 +122,14 @@ func _on_enemy_defeated(e) -> void:
 func _on_health_changed(current: int, _maximum: int) -> void:
 	_refresh_hud()
 	if current < player.max_health:
-		_shake(10.0, 0.25)
+		_shake(0.6, 0.25)
 
 func _on_hit_landed(_target: Node) -> void:
-	_shake(6.0, 0.15)
+	_shake(0.35, 0.15)
 
 func _shake(strength: float, duration: float) -> void:
-	var cam := player.get_node_or_null("Camera")
-	if cam and cam.has_method("shake"):
-		cam.shake(strength, duration)
+	if camera and camera.has_method("shake"):
+		camera.shake(strength, duration)
 
 func _refresh_hud() -> void:
 	hud_label.text = "Wave %d   HP %d/%d   Score %d   Best %d" % [
@@ -130,7 +141,7 @@ func _on_player_died() -> void:
 	spawn_timer.stop()
 	wave_timer.stop()
 	for n in get_tree().get_nodes_in_group("enemies"):
-		if n.has_method("set_target"):
+		if is_instance_valid(n) and n.has_method("set_target"):
 			n.set_target(null)
 	if score > best_score:
 		best_score = score

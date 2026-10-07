@@ -1,18 +1,38 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/enemy.svg" id="2"]
 
-[sub_resource type="RectangleShape2D" id="EnemyShape"]
-size = Vector2(44, 90)
+[sub_resource type="CapsuleShape3D" id="EnemyShape"]
+radius = 0.45
+height = 1.8
 
-[node name="Enemy" type="CharacterBody2D"]
+[sub_resource type="CapsuleMesh" id="EnemyBodyMesh"]
+radius = 0.45
+height = 1.8
+
+[sub_resource type="BoxMesh" id="ClubMesh"]
+size = Vector3(0.14, 0.14, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="ClubMat"]
+albedo_color = Color(0.35, 0.22, 0.15, 1)
+roughness = 0.9
+
+[node name="Enemy" type="CharacterBody3D"]
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("1")
 
-[node name="Sprite" type="Sprite2D" parent="."]
-texture = ExtResource("2")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("EnemyShape")
+
+[node name="MeshRoot" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("EnemyBodyMesh")
+
+[node name="Club" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.9, -0.3)
+mesh = SubResource("ClubMesh")
+material_override = SubResource("ClubMat")

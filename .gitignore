@@ -39,8 +39,10 @@ videos/*/render.log
 videos/*/.hyperframes/
 videos/*/.thumbnails/
 videos/*/node_modules/
+videos/**/*.import
 *.mp4
 *.avi
 *.mov
 *.mkv
 *.webm
+*.png
