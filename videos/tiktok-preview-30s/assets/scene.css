@@ -1,0 +1,144 @@
+:root {
+  --bg: #17121c;
+  --bg-deep: #0d0a12;
+  --ink: #1a1623;
+  --ground: #2b241e;
+  --ground-hi: #5a4432;
+  --skin-player: #f1d9b0;
+  --skin-enemy: #d9b48a;
+  --steel: #9a8f6a;
+  --red: #8a1a1a;
+  --red-hot: #e63946;
+  --paper: #f3e9d2;
+  --paper-dim: #c9bfa8;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  color: var(--paper);
+}
+#root {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(13, 10, 18, 0) 55%,
+    rgba(13, 10, 18, 0.75) 100%
+  );
+}
+.ground-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1540px;
+  height: 60px;
+  background: var(--ground);
+}
+.ground-band::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  height: 3px;
+  background: var(--ground-hi);
+}
+.hero-samurai,
+.hero-enemy {
+  position: absolute;
+  width: 360px;
+  height: 540px;
+  bottom: 380px;
+  will-change: transform;
+}
+.display {
+  font-family: "Noto Serif JP", serif;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  line-height: 0.95;
+}
+.ui-caps {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.beat-line {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  text-align: center;
+  will-change: transform, opacity;
+}
+.counter-badge {
+  position: absolute;
+  top: 180px;
+  right: 80px;
+  width: 180px;
+  height: 180px;
+  border: 4px solid var(--paper);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Noto Serif JP", serif;
+  font-weight: 900;
+  font-size: 110px;
+  color: var(--paper);
+  background: rgba(13, 10, 18, 0.7);
+  will-change: transform;
+}
+.slash-arc {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+}
+.slash-arc path {
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+.spark {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: var(--red-hot);
+  border-radius: 999px;
+  filter: blur(2px);
+  will-change: transform, opacity;
+}
+.cta-icon-slot {
+  position: absolute;
+  left: 50%;
+  top: 540px;
+  width: 420px;
+  height: 420px;
+  transform: translateX(-50%);
+  will-change: transform;
+}
+.cta-icon-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

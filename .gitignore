@@ -32,3 +32,11 @@ Thumbs.db
 *.jks
 release.keystore
 debug.keystore
+
+# HyperFrames video renders (keep source, drop binary output)
+videos/*/renders/
+videos/*/render.log
+videos/*/.hyperframes/
+videos/*/.thumbnails/
+videos/*/node_modules/
+*.mp4

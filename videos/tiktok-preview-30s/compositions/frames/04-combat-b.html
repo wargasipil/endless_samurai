@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Noto+Serif+JP:wght@900&display=swap">
+    <link rel="stylesheet" href="assets/scene.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      .shake-root {
+        position: absolute;
+        inset: 0;
+        will-change: transform;
+      }
+      .fighter {
+        position: absolute;
+        bottom: 380px;
+        width: 320px;
+        height: 480px;
+        will-change: transform, opacity;
+      }
+      .player {
+        left: 50%;
+        margin-left: -160px;
+      }
+      .enemy {
+        left: 50%;
+        margin-left: -160px;
+        transform: scaleX(-1);
+        opacity: 0;
+      }
+      .slash-svg {
+        position: absolute;
+        left: 150px;
+        top: 1150px;
+        width: 780px;
+        height: 260px;
+        pointer-events: none;
+      }
+      .slash-svg path {
+        fill: none;
+        stroke: var(--paper);
+        stroke-width: 14;
+        stroke-linecap: round;
+      }
+      .flash {
+        position: absolute;
+        left: 50%;
+        top: 1200px;
+        width: 420px;
+        height: 420px;
+        margin-left: -210px;
+        border-radius: 999px;
+        background: radial-gradient(
+          circle,
+          var(--red-hot) 0%,
+          rgba(230, 57, 70, 0.6) 25%,
+          transparent 65%
+        );
+        opacity: 0;
+      }
+      .counter {
+        position: absolute;
+        top: 240px;
+        left: 50%;
+        transform: translateX(-50%) scale(1);
+        font-family: "Noto Serif JP", serif;
+        font-weight: 900;
+        color: var(--paper);
+        text-align: center;
+        line-height: 1;
+        will-change: transform, opacity;
+      }
+      .counter-label {
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 42px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--paper-dim);
+        margin-bottom: 24px;
+      }
+      .counter-num {
+        font-size: 320px;
+        color: var(--red-hot);
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-zz5v" id="root" data-composition-id="combat-b" data-width="1080" data-height="1920" data-duration="7">
+      <div data-hf-id="hf-q7bi" class="vignette"></div>
+      <div data-hf-id="hf-hnpv" class="ground-band"></div>
+      <div data-hf-id="hf-gmlf" class="shake-root">
+        <div data-hf-id="hf-z6b2" class="fighter player">
+          <img data-hf-id="hf-f4p3" src="assets/samurai.svg" alt="" aria-hidden="true" style="width: 100%; height: 100%">
+        </div>
+        <div data-hf-id="hf-85j1" class="fighter enemy enemy-1">
+          <img data-hf-id="hf-7rvd" src="assets/enemy.svg" alt="" aria-hidden="true" style="width: 100%; height: 100%">
+        </div>
+        <div data-hf-id="hf-c3n2" class="fighter enemy enemy-2">
+          <img data-hf-id="hf-psj1" src="assets/enemy.svg" alt="" aria-hidden="true" style="width: 100%; height: 100%">
+        </div>
+        <div data-hf-id="hf-g1r3" class="fighter enemy enemy-3">
+          <img data-hf-id="hf-qzg4" src="assets/enemy.svg" alt="" aria-hidden="true" style="width: 100%; height: 100%">
+        </div>
+        <svg data-hf-id="hf-9yau" class="slash-svg slash-1" viewBox="0 0 780 260">
+          <path data-hf-id="hf-ljeo" d="M 40 220 Q 390 20 740 180" />
+        </svg>
+        <svg data-hf-id="hf-y10h" class="slash-svg slash-2" viewBox="0 0 780 260">
+          <path data-hf-id="hf-j6i4" d="M 40 60 Q 390 240 740 100" />
+        </svg>
+        <svg data-hf-id="hf-oc6c" class="slash-svg slash-3" viewBox="0 0 780 260">
+          <path data-hf-id="hf-1qm6" d="M 740 220 Q 390 20 40 180" />
+        </svg>
+        <div data-hf-id="hf-wgca" class="flash flash-1"></div>
+        <div data-hf-id="hf-si89" class="flash flash-2"></div>
+        <div data-hf-id="hf-rqkg" class="flash flash-3"></div>
+      </div>
+      <div data-hf-id="hf-878y" class="counter" data-layout-allow-overlap="">
+        <div data-hf-id="hf-ukq1" class="counter-label" data-layout-allow-overlap="">FELLED</div>
+        <div data-hf-id="hf-z1x8" class="counter-num" data-count="0" data-layout-allow-overlap="">0</div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const slash1 = document.querySelector(".slash-1 path");
+      const slash2 = document.querySelector(".slash-2 path");
+      const slash3 = document.querySelector(".slash-3 path");
+      const slashPaths = [slash1, slash2, slash3];
+      const slashLens = slashPaths.map((p) => {
+        const len = p.getTotalLength();
+        p.setAttribute("stroke-dasharray", len);
+        p.setAttribute("stroke-dashoffset", len);
+        return len;
+      });
+
+      const counterNum = document.querySelector(".counter-num");
+      const counterProxy = { v: 0 };
+
+      const beatStarts = [0.1, 2.4, 4.7];
+      const enemySels = [".enemy-1", ".enemy-2", ".enemy-3"];
+      const slashSels = [".slash-1 path", ".slash-2 path", ".slash-3 path"];
+      const flashSels = [".flash-1", ".flash-2", ".flash-3"];
+
+      beatStarts.forEach((t0, i) => {
+        const n = i + 1;
+        const enemySel = enemySels[i];
+        const slashSel = slashSels[i];
+        const flashSel = flashSels[i];
+        const slashLen = slashLens[i];
+
+        const fromX = i === 2 ? -520 : 520;
+        const exitX = i === 2 ? -840 : 840;
+        const exitRot = i === 2 ? -22 : 22;
+
+        tl.fromTo(
+          enemySel,
+          { x: fromX, opacity: 0 },
+          { x: fromX * 0.1, opacity: 1, duration: 0.35, ease: "power3.out" },
+          t0
+        );
+        tl.to(
+          enemySel,
+          { x: 0, duration: 0.12, ease: "power2.out" },
+          t0 + 0.35
+        );
+
+        tl.fromTo(
+          slashSel,
+          { attr: { "stroke-dashoffset": slashLen } },
+          {
+            attr: { "stroke-dashoffset": 0 },
+            duration: 0.16,
+            ease: "power3.in",
+          },
+          t0 + 0.55
+        );
+        tl.to(
+          slashSel,
+          {
+            attr: { "stroke-dashoffset": -slashLen },
+            duration: 0.2,
+            ease: "power3.out",
+          },
+          t0 + 0.72
+        );
+
+        tl.fromTo(
+          flashSel,
+          { opacity: 0, scale: 0.4 },
+          { opacity: 1, scale: 1.2, duration: 0.07, ease: "expo.out" },
+          t0 + 0.62
+        );
+        tl.to(
+          flashSel,
+          { opacity: 0, scale: 1.6, duration: 0.22, ease: "power2.out" },
+          t0 + 0.69
+        );
+
+        tl.to(
+          enemySel,
+          {
+            x: exitX,
+            y: -100,
+            rotation: exitRot,
+            opacity: 0,
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          t0 + 0.64
+        );
+
+        tl.to(
+          ".shake-root",
+          {
+            keyframes: [
+              { x: 0, y: 0, duration: 0 },
+              { x: 14, y: -8, duration: 0.03 },
+              { x: -12, y: 6, duration: 0.03 },
+              { x: 8, y: -4, duration: 0.03 },
+              { x: 0, y: 0, duration: 0.03 },
+            ],
+            ease: "none",
+          },
+          t0 + 0.62
+        );
+
+        tl.to(
+          counterProxy,
+          {
+            v: n,
+            duration: 0.35,
+            ease: "power2.out",
+            onUpdate: () => {
+              counterNum.textContent = Math.round(counterProxy.v);
+            },
+          },
+          t0 + 0.68
+        );
+        tl.fromTo(
+          ".counter",
+          { scale: 1 },
+          { scale: 1.3 + i * 0.1, duration: 0.14, ease: "back.out(2.5)" },
+          t0 + 0.68
+        );
+        tl.to(
+          ".counter",
+          { scale: 1, duration: 0.3, ease: "power2.out" },
+          t0 + 0.84
+        );
+      });
+
+      window.__timelines["combat-b"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
