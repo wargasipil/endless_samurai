@@ -4,6 +4,9 @@ const MAIN_SCENE := "res://scenes/main.tscn"
 
 func _ready() -> void:
 	$Begin.pressed.connect(_begin)
+	if "--demo" in OS.get_cmdline_user_args():
+		call_deferred("_begin")
+		return
 
 func _begin() -> void:
 	get_tree().change_scene_to_file(MAIN_SCENE)

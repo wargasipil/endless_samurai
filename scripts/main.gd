@@ -44,6 +44,16 @@ func _ready() -> void:
 	_advance_wave()
 	_refresh_hud()
 
+	if "--demo" in OS.get_cmdline_user_args():
+		_enter_demo_mode()
+
+func _enter_demo_mode() -> void:
+	controls.visible = false
+	var demo := preload("res://scripts/demo_controller.gd").new()
+	demo.name = "DemoController"
+	demo.setup(player)
+	$World.add_child(demo)
+
 func _advance_wave() -> void:
 	wave += 1
 	var interval: float = maxf(0.6, 2.6 - wave * 0.15)
