@@ -1,12 +1,11 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/touch_controls.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/camera_shake.gd" id="4"]
-[ext_resource type="Texture2D" path="res://assets/healthbar/portrait_samurai.png" id="hp_portrait"]
-[ext_resource type="Texture2D" path="res://assets/healthbar/bar_fill.png" id="hp_fill"]
-[ext_resource type="Texture2D" path="res://assets/healthbar/bar_empty.png" id="hp_empty"]
+[ext_resource type="Script" path="res://scripts/health_bar.gd" id="hp_script"]
+[ext_resource type="Texture2D" path="res://assets/healthbar_flat/healthbar_flat@2x.png" id="hp_sheet"]
 
 [sub_resource type="BoxShape3D" id="FloorShape"]
 size = Vector3(60, 1, 60)
@@ -106,40 +105,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="HpBar" type="Control" parent="UI/HUD"]
-offset_left = 20.0
-offset_top = 16.0
-offset_right = 560.0
-offset_bottom = 170.0
+[node name="HealthBar" type="Control" parent="UI/HUD"]
+offset_left = 10.0
+offset_top = 12.0
+offset_right = 266.0
+offset_bottom = 76.0
+mouse_filter = 2
+script = ExtResource("hp_script")
+sheet = ExtResource("hp_sheet")
+sheet_scale = 2
 
-[node name="Portrait" type="TextureRect" parent="UI/HUD/HpBar"]
-offset_right = 140.0
-offset_bottom = 140.0
-texture = ExtResource("hp_portrait")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="HpBarProgress" type="TextureProgressBar" parent="UI/HUD/HpBar"]
-offset_left = 150.0
-offset_top = 44.0
-offset_right = 540.0
-offset_bottom = 108.0
-max_value = 100.0
-value = 100.0
-texture_under = ExtResource("hp_empty")
-texture_progress = ExtResource("hp_fill")
-nine_patch_stretch = false
-
-[node name="HpBarText" type="Label" parent="UI/HUD/HpBar/HpBarProgress"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-text = "20 / 20"
-horizontal_alignment = 1
+[node name="HpText" type="Label" parent="UI/HUD"]
+offset_left = 256.0
+offset_top = 12.0
+offset_right = 400.0
+offset_bottom = 76.0
+text = "5 / 5"
 vertical_alignment = 1
-theme_override_colors/font_color = Color(1, 0.98, 0.9, 1)
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.02, 0.02, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 24
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 26
 
 [node name="HudLabel" type="Label" parent="UI/HUD"]
 offset_left = 640.0
