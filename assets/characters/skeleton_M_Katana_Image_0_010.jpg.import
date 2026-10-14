@@ -1,0 +1,37 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://wcd6jxd13xs8"
+path="res://.godot/imported/skeleton_M_Katana_Image_0_010.jpg-c20a4735b91a35d2f82742f504cc9f1c.ctex"
+metadata={
+"vram_texture": false
+}
+generator_parameters={
+"md5": "078e79d4d8d9b5fcba5749434791c594"
+}
+
+[deps]
+
+source_file="res://assets/characters/skeleton_M_Katana_Image_0_010.jpg"
+dest_files=["res://.godot/imported/skeleton_M_Katana_Image_0_010.jpg-c20a4735b91a35d2f82742f504cc9f1c.ctex"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1

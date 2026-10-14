@@ -7,6 +7,10 @@ var _base_offset: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	_base_offset = position
 
+func set_base_offset(p: Vector3) -> void:
+	_base_offset = p
+	position = p
+
 func shake(strength: float, duration: float) -> void:
 	shake_strength = maxf(shake_strength, strength)
 	shake_time = maxf(shake_time, duration)

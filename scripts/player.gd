@@ -6,6 +6,14 @@ const GRAVITY := 20.0
 const ATTACK_DURATION := 0.28
 const HIT_KNOCKBACK := 6.0
 const KNOCKBACK_TIME := 0.12
+# The samurai model (assets/characters/samurai.glb, from the Blender project's library: run.ps1 game-characters).
+# Its actions are in place; Person_Run covers 0.087 m a frame at 24 fps (person_meta.RUN_V), so the run plays
+# at the samurai's speed / (2.09 m/s x the model's scale). The attack plays the cut of Person_Attack (from the top
+# of the wind-up, frame 9, through the follow-through) inside ATTACK_DURATION.
+const RUN_ANIM_SPEED := 2.088
+const ATTACK_FROM := 8.0 / 24.0
+const ATTACK_ANIM_RATE := 1.75
+const JUMP_FROM := 10.0 / 24.0
 
 @export var max_health: int = 5
 
@@ -16,19 +24,27 @@ var attack_timer: float = 0.0
 var knockback_timer: float = 0.0
 var facing: Vector3 = Vector3(0.0, 0.0, -1.0)
 var _hit_this_swing: Dictionary = {}
+var _anim_state := ""
+var anim: AnimationPlayer
 
 signal health_changed(current: int, maximum: int)
 signal died
 signal hit_landed(target: Node)
 
 @onready var mesh_root: Node3D = $MeshRoot
-@onready var sword_pivot: Node3D = $MeshRoot/SwordPivot
-@onready var hit_area: Area3D = $MeshRoot/SwordPivot/HitArea
-@onready var slash_vfx: MeshInstance3D = $MeshRoot/SwordPivot/Slash
+@onready var model: Node3D = $MeshRoot/Model
+# The sword mount is turned to face the model's front (+Z): the hit area and slash sweep where the katana is.
+@onready var sword_pivot: Node3D = $MeshRoot/SwordMount/SwordPivot
+@onready var hit_area: Area3D = $MeshRoot/SwordMount/SwordPivot/HitArea
+@onready var slash_vfx: MeshInstance3D = $MeshRoot/SwordMount/SwordPivot/Slash
 
 func _ready() -> void:
 	health = max_health
 	hit_area.monitoring = true
+	anim = model.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	for n in ["Person_Run", "Person_Walk"]:
+		anim.get_animation(n).loop_mode = Animation.LOOP_LINEAR
+	_play_idle()
 	health_changed.emit(health, max_health)
 
 func set_move_input(v: Vector2) -> void:
@@ -45,6 +61,37 @@ func request_attack() -> void:
 		sword_pivot.rotation.y = -PI * 0.55
 		tw.tween_property(sword_pivot, "rotation:y", PI * 0.55, ATTACK_DURATION)
 		_flash_slash()
+		_play("Person_Attack", ATTACK_ANIM_RATE, ATTACK_FROM, 0.05, true)
+
+func _play(anim_name: String, rate: float, from: float = 0.0, blend: float = 0.12, restart: bool = false) -> void:
+	if anim == null:
+		return
+	if restart or _anim_state != anim_name:
+		anim.play(anim_name, blend)
+		anim.seek(from, true)
+		_anim_state = anim_name
+	anim.speed_scale = rate
+
+func _play_idle() -> void:
+	# The library samurai has no idle action: hold the guard every attack starts from (Person_Attack, frame 1).
+	if anim == null or _anim_state == "idle":
+		return
+	anim.play("Person_Attack", 0.0)
+	anim.seek(0.0, true)
+	anim.speed_scale = 0.0
+	_anim_state = "idle"
+
+func _update_anim() -> void:
+	if attack_timer > 0.0:
+		return
+	if not is_on_floor():
+		_play("Person_Jump", 1.0, JUMP_FROM, 0.08)
+		return
+	var flat_speed := Vector2(velocity.x, velocity.z).length()
+	if flat_speed > 0.6:
+		_play("Person_Run", clampf(flat_speed / (RUN_ANIM_SPEED * model.scale.x), 0.6, 3.0))
+	else:
+		_play_idle()
 
 func _flash_slash() -> void:
 	if slash_vfx == null:
@@ -152,3 +199,4 @@ func _physics_process(delta: float) -> void:
 			sword_pivot.rotation.y = 0.0
 
 	move_and_slide()
+	_update_anim()

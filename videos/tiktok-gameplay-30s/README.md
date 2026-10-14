@@ -1,52 +1,52 @@
 # tiktok-gameplay-30s — screen-captured gameplay TikTok
 
-Live gameplay recording of the Samurai game, cropped to vertical 1080x1920
-for TikTok. Companion to `videos/tiktok-preview-30s/` (stylized SVG recreation).
+Live gameplay recording of the Samurai game in the origami arena, captured vertical
+(1080x1920) for TikTok. Companion to `videos/tiktok-preview-30s/` (stylized SVG recreation).
 
 ## 1. Install Godot 4.3 (Mobile, Windows x64)
 
-Portable, no admin needed. Preferred location per project convention:
+Portable, no admin needed. Put it in `tools/godot/` (the whole `tools/` tree is gitignored):
 
 ```
-D:\wargasipil\samurai\tools\godot\Godot_v4.3-stable_win64.exe
+tools/godot/Godot_v4.3-stable_win64.exe
+tools/godot/Godot_v4.3-stable_win64_console.exe
 ```
 
 Download link: https://godotengine.org/download/archive/4.3-stable/
-Pick **Godot Engine 4.3 Standard — Windows (64-bit)** and unzip the exe into
-`tools/godot/`. The whole `tools/` tree is gitignored.
+Pick **Godot Engine 4.3 Standard — Windows (64-bit)**.
 
-## 2. Record raw gameplay (one command, no manual play)
+## 2. Record and encode (one command each, no manual play)
 
-The game ships with a `--demo` autopilot that pilots the samurai, chases
-nearest enemies, swings on contact, and jumps on bunches. Combined with
-Godot's built-in `--write-movie` deterministic recorder, this gives a
-hands-off capture:
-
-```powershell
-D:\wargasipil\samurai\tools\godot\Godot_v4.3-stable_win64.exe `
-  --path D:\wargasipil\samurai `
-  --write-movie D:\wargasipil\samurai\videos\tiktok-gameplay-30s\gameplay-raw.avi `
-  --fixed-fps 60 `
-  --quit-after 2700 `
-  -- --demo
+```bash
+make record DURATION=3000   # 50 s raw AVI, vertical 1280x2275 at 60 fps, the --demo autopilot playing
+make mp4 OFFSET=17          # 30 s from 17 s in (wave 2 brings the wraiths at 20 s, wave 3 the big skeletons at 40 s),
+                            # scaled to 1080x1920, H.264 -> samurai-tiktok-30s.mp4 (the 2026-10-14 cut)
+make hook          # optional: prepends the 1.6 s "ENDLESS SAMURAI" title card
 ```
 
-- `--fixed-fps 60` locks the physics step to 60Hz for deterministic frame output.
-- `--quit-after 2700` exits after 2700 frames = **45s** of footage (gives cut room for a 30s final).
-- The `--demo` after the bare `--` is passed to the game, where `scripts/demo_controller.gd` picks it up and hides the on-screen touch controls.
+- The game runs in `--demo`: `scripts/demo_controller.gd` pilots the samurai (chases the
+  nearest enemy near the courtyard, walks back to it otherwise, steers round stones and
+  trees, swings on contact, jumps on bunches), hides the touch controls and gives him 20 HP.
+  About 48 s in he is nearly out of HP, so longer runs end in a game over.
+- Characters: the player is the library Samurai, grunts are Skeletons, runners Wraiths,
+  brutes big Skeletons (`assets/characters/*.glb`, from the Blender project:
+  `run.ps1 game-characters`).
+- `--write-movie` with `--fixed-fps 60` records every frame deterministically (it runs at
+  ~25 % of real time while recording, about 3 minutes for 45 s).
+- **Why 1280x2275:** a 1920 px tall window doesn't fit a 1080p screen (Windows clamps it), so
+  `make record` writes a temporary `override.cfg` that switches the stretch mode to
+  `viewport` with a 540x960 window. Godot then renders and records the base 1280x720
+  expanded to 9:16, the same view (and HUD layout) a portrait phone gets. The file is
+  deleted afterwards and is gitignored in case a run is interrupted.
+- On portrait screens `scripts/main.gd` frames the camera by width (higher and wider) so
+  the arena around the samurai stays in view.
 
-Output: `gameplay-raw.avi` (landscape 1280x720, no audio, uncompressed-ish).
-
-## 3. Hand it off
-
-Once the AVI exists, point Claude at it. It gets:
-
-- cropped to vertical 1080x1920 (center crop or zoomed reframe)
-- cut to a 30s highlight with punch-ins on hits
-- re-encoded H.264 + optional BGM/CTA overlay inside a HyperFrames composition
+Outputs (gitignored): `gameplay-raw.avi` (~680 MB), `samurai-tiktok-30s.mp4` (~80 MB),
+`samurai-tiktok-hook.mp4`.
 
 ## Notes
 
 - `--demo` also skips the title screen (see `scripts/title.gd`).
-- To preview the demo autopilot interactively (watch it play) just run the game normally and pass `--demo` on the Godot command line without `--write-movie`.
-- Raw AVIs, renders, and `node_modules/` are gitignored (`videos/*/renders/`, `*.mp4`, etc.) — raw AVIs stay out via `*.avi` too (added below).
+- To watch the autopilot play, run `make demo`.
+- The arena itself comes from the Blender project (`D:\blender_project`, place
+  SamuraiArena); see the header of `scripts/arena.gd`.

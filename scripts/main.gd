@@ -2,18 +2,22 @@ extends Node3D
 
 const ENEMY_SCENE := preload("res://scenes/enemy.tscn")
 const SAVE_PATH := "user://save.cfg"
-const ARENA_LIMIT := 18.0
 const SPAWN_RADIUS := 14.0
+# Portrait screens (phones, the TikTok capture) see a narrow strip with the landscape camera:
+# frame by width there, a little higher, so the arena around the samurai stays in view.
+const PORTRAIT_FOV := 50.0
+const PORTRAIT_OFFSET := Vector3(0.0, 6.6, 6.0)
 
 const ENEMY_VARIANTS := {
-	"grunt":  {"hp": 2, "damage": 1, "speed": 2.5, "score": 10, "tint": Color(0.85, 0.2, 0.2)},
-	"runner": {"hp": 1, "damage": 1, "speed": 4.2, "score": 15, "tint": Color(1.0, 0.6, 0.2)},
-	"brute":  {"hp": 5, "damage": 2, "speed": 1.8, "score": 30, "tint": Color(0.6, 0.3, 0.9)},
+	"grunt":  {"hp": 2, "damage": 1, "speed": 2.5, "score": 10, "tint": Color(0.85, 0.2, 0.2), "model": "skeleton", "scale": 1.15},
+	"runner": {"hp": 1, "damage": 1, "speed": 4.2, "score": 15, "tint": Color(1.0, 0.6, 0.2), "model": "wraith", "scale": 1.0},
+	"brute":  {"hp": 5, "damage": 2, "speed": 1.8, "score": 30, "tint": Color(0.6, 0.3, 0.9), "model": "skeleton", "scale": 1.5},
 }
 
 @onready var player: CharacterBody3D = $World/Player
 @onready var camera: Camera3D = $World/CameraRig/Camera3D
 @onready var camera_rig: Node3D = $World/CameraRig
+@onready var arena: Arena = $World/Arena
 @onready var hud_label: Label = $UI/HUD/HudLabel
 @onready var health_bar: HealthBar = $UI/HUD/HealthBar
 @onready var hp_text: Label = $UI/HUD/HpText
@@ -29,11 +33,14 @@ var kills: int = 0
 var score: int = 0
 var best_score: int = 0
 var alive: bool = true
+var _landscape_cam: Array = []
 
 func _ready() -> void:
 	randomize()
 	best_score = _load_best()
-	_scatter_decor()
+	_landscape_cam = [camera.transform, camera.fov, camera.keep_aspect]
+	get_viewport().size_changed.connect(_fit_camera)
+	_fit_camera()
 
 	controls.move_vector.connect(_on_move)
 	controls.jump_pressed.connect(func() -> void: player.request_jump())
@@ -64,28 +71,20 @@ func _enter_demo_mode() -> void:
 	demo.setup(player)
 	$World.add_child(demo)
 
-func _scatter_decor() -> void:
-	# Deterministic-ish scatter of small ground accents so the arena has depth.
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 20261007
-	var stone_mat := StandardMaterial3D.new()
-	stone_mat.albedo_color = Color(0.18, 0.14, 0.2, 1)
-	stone_mat.roughness = 0.95
-	var decor_root := Node3D.new()
-	decor_root.name = "Decor"
-	$World.add_child(decor_root)
-	for i in 40:
-		var m := MeshInstance3D.new()
-		var box := BoxMesh.new()
-		var s: float = rng.randf_range(0.25, 0.9)
-		box.size = Vector3(s, s * 0.4, s)
-		m.mesh = box
-		m.material_override = stone_mat
-		var angle := rng.randf() * TAU
-		var r := rng.randf_range(6.0, 24.0)
-		m.position = Vector3(cos(angle) * r, 0.0, sin(angle) * r)
-		m.rotation.y = rng.randf() * TAU
-		decor_root.add_child(m)
+func _fit_camera() -> void:
+	var size := get_viewport().get_visible_rect().size
+	if size.y > size.x:
+		camera.keep_aspect = Camera3D.KEEP_WIDTH
+		camera.fov = PORTRAIT_FOV
+		camera.transform = Transform3D(Basis.looking_at(-PORTRAIT_OFFSET + Vector3(0.0, 0.5, 0.0)), PORTRAIT_OFFSET)
+	else:
+		camera.keep_aspect = _landscape_cam[2]
+		camera.fov = _landscape_cam[1]
+		camera.transform = _landscape_cam[0]
+	if camera.has_method("set_base_offset"):
+		camera.set_base_offset(camera.position)
+	var dist := camera.position.length()
+	arena.set_occluder_fade(dist - 4.5, dist - 1.3)
 
 func _process(_delta: float) -> void:
 	if camera_rig and player:
@@ -120,14 +119,22 @@ func _spawn_enemy() -> void:
 	profile = _scale_for_wave(profile)
 	var e := ENEMY_SCENE.instantiate()
 	e.configure(profile)
-	var angle := randf() * TAU
-	var pos := player.global_position + Vector3(cos(angle) * SPAWN_RADIUS, 0.5, sin(angle) * SPAWN_RADIUS)
-	pos.x = clampf(pos.x, -ARENA_LIMIT, ARENA_LIMIT)
-	pos.z = clampf(pos.z, -ARENA_LIMIT, ARENA_LIMIT)
-	e.global_position = pos
 	e.set_target(player)
 	e.defeated.connect(_on_enemy_defeated)
 	$World.add_child(e)
+	e.global_position = _spawn_point()
+
+func _spawn_point() -> Vector3:
+	# On the island, clear of stones, trees and the shrine, not on top of the samurai.
+	var best := Vector3.ZERO
+	for i in 24:
+		var angle := randf() * TAU
+		var r := SPAWN_RADIUS * randf_range(0.7, 1.0)
+		var p := arena.clamp_to_play(player.global_position + Vector3(cos(angle), 0.0, sin(angle)) * r, 1.0)
+		if arena.is_free(p, 0.8) and p.distance_to(player.global_position) > 6.0:
+			return p + Vector3(0.0, 0.5, 0.0)
+		best = p
+	return best + Vector3(0.0, 0.5, 0.0)
 
 func _roll_variant() -> Dictionary:
 	var roll := randf()

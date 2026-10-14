@@ -18,6 +18,8 @@ build/
 
 # Local dev tooling (Godot editor, SDK trees, etc.)
 tools/
+# Temporary settings written by `make record` (vertical capture)
+override.cfg
 
 # System / editor
 .DS_Store

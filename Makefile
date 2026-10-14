@@ -7,8 +7,8 @@
 #   make demo      — run with --demo autopilot (no screen capture)
 #   make import    — headless re-import of all assets
 #   make check     — import + script parse pass, prints errors only
-#   make record    — record 45s raw AVI via --write-movie + --demo
-#   make mp4       — convert raw AVI to 30s vertical 1080x1920 MP4 (letterbox)
+#   make record    — record 45s raw vertical AVI (1280x2275) via --write-movie + --demo
+#   make mp4       — convert raw AVI to 30s vertical 1080x1920 MP4
 #   make hook      — mp4 with 1.6s "ENDLESS SAMURAI" hook card prepended
 #   make tiktok    — record + mp4 + hook (full pipeline)
 #   make clean-cache  — delete the .godot import cache (safe)
@@ -66,15 +66,20 @@ import:
 check:
 	"$(GODOT)" --path "$(PROJECT)" --headless --import 2>&1 | grep -E "ERROR|SCRIPT ERROR|WARNING" || echo "OK: no errors"
 
+# Vertical capture: the screen can't hold a 1920 px tall window, so a temporary override.cfg
+# switches to "viewport" stretch with a small window; Godot then renders and records the
+# base 1280x720 expanded to the window's 9:16 (1280x2275), the same view a portrait phone gets.
 record:
 	@mkdir -p "$(VIDEO_DIR)"
-	"$(GODOT)" --path "$(PROJECT)" --write-movie "$(RAW)" --fixed-fps 60 --quit-after $(DURATION) -- --demo
+	@printf '[display]\n\nwindow/size/window_width_override=540\nwindow/size/window_height_override=960\nwindow/stretch/mode="viewport"\n' > override.cfg
+	"$(GODOT)" --path "$(PROJECT)" --write-movie "$(RAW)" --fixed-fps 60 --quit-after $(DURATION) -- --demo; \
+	  status=$$?; rm -f override.cfg; exit $$status
 	@echo ""
 	@echo "Raw AVI: $(RAW)"
 
 mp4: $(RAW)
 	$(FFMPEG) -ss $(OFFSET) -i "$(RAW)" -t 30 \
-	  -vf "scale=1080:-2:flags=lanczos,pad=1080:1920:0:(1920-ih)/2:color=0x0a0612,fade=t=in:st=0:d=0.3,fade=t=out:st=29.6:d=0.4" \
+	  -vf "scale=1080:1920:flags=lanczos,setsar=1,fade=t=in:st=0:d=0.3,fade=t=out:st=29.6:d=0.4" \
 	  -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -movflags +faststart -an \
 	  -y "$(MP4)"
 	@echo ""
